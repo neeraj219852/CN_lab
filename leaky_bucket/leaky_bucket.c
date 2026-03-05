@@ -2,53 +2,57 @@
 
 int main()
 {
-    int inc;        // incoming packet size
-    int outg;       // outgoing rate (how many packets leave the bucket each time)
-    int b_size;     // maximum bucket size (capacity)
-    int n;          // number of inputs (number of packet arrivals)
-    int store = 0;  // current packets stored in bucket
+    int b_size, n, rate;
 
-    // Taking bucket size, outgoing rate and number of packet inputs
-    printf("Enter bucket size, outgoing rate and number of inputs:");
-    scanf("%d %d %d",&b_size,&outg,&n);
+    // Input the maximum bucket capacity
+    printf("Enter the bucket size : ");
+    scanf("%d",&b_size);
 
-    // Loop runs for each incoming packet
-    while (n != 0)
+    // Input the outgoing rate (how many packets leave per unit time)
+    printf("Enter the output rate : ");
+    scanf("%d",&rate);
+
+    // Number of incoming packets
+    printf("Enter the number of incoming packets : ");
+    scanf("%d",&n);
+
+    int store = 0, inc;  
+    // store = current packets inside the bucket
+    // inc = incoming packet size
+
+    // Loop runs until all packets are processed
+    while(n != 0)
     {
-        // Input packet size
-        printf("Enter the incoming packet size :");
+        // Input incoming packet size
+        printf("Enter the packet size : ");
         scanf("%d",&inc);
 
-        printf("Incoming packet size :- %d\n",inc);
-
-        // Check if bucket has enough free space
-        if (inc <= (b_size - store))
+        // Check if bucket has enough space
+        if(inc <= b_size - store)
         {
-            // If space is available, store the packet
+            // Add packet to bucket
             store += inc;
 
-            printf("Bucket buffer size is %d out of %d\n",store, b_size);
+            printf("Used space of bucket is %d/%d\n",store,b_size);
         }
         else
         {
             // If packet exceeds remaining space, drop extra packets
-            printf("Dropped number of packets :- %d\n", inc - (b_size - store));
+            printf("Bucket is full. Discarded packets: %d\n",
+                   (inc - (b_size - store)));
 
-            // Fill the bucket completely
-            store += b_size - store;
-
-            printf("Bucket buffer size is %d out of %d\n",store, b_size);
+            // Fill bucket to maximum capacity
+            store = b_size;
         }
 
-        // Packets leave the bucket at fixed outgoing rate
-        store = store - outg;
+        // Packets leave the bucket at a fixed rate
+        store -= rate;
 
-        // Display packets remaining in bucket
-        printf("After outgoing,%d packets left out of %d in buffer\n", store, b_size);
+        // Prevent negative buffer value
+        if(store < 0)
+            store = 0;
 
-        printf("\n");
-
-        // Decrease number of inputs
+        // Reduce number of inputs
         n--;
     }
 }
